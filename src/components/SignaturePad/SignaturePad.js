@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import SignatureCanvas from 'react-signature-canvas';
+import { Button } from "react-bootstrap";
 import './SignaturePad.scss';
 
 const SignaturePad = ({ setSignatureData }) => {
@@ -19,8 +20,8 @@ const SignaturePad = ({ setSignatureData }) => {
         canvasProps={{ width: 500, height: 200, className: 'sigCanvas' }}
       />
       <div className="signature-pad-buttons">
-        <button type="button" onClick={clear}>Clear</button>
-        <button type="button" onClick={save}>Save</button>
+        <Button variant="secondary" onClick={clear} className="mr-2">Clear</Button>
+        <Button variant="primary" onClick={save}>Save</Button>
       </div>
     </div>
   );
