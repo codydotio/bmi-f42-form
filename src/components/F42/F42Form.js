@@ -58,16 +58,21 @@ const CheckboxGroup = ({ identifier, groupName, options, selected, setSelected, 
 };
 
 const InputField = ({ label, type, value, onChange, name }) => (
-  <div className="mb-4">
-    <label className="block text-gray-700 text-sm font-bold mb-2">{label}</label>
-    <input
-      type={type}
-      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-      value={value}
-      onChange={onChange}
-      name={name}
-    />
-  </div>
+  <Row className="mb-2">
+    <Col md={3}>
+      <label className="block text-gray-700 text-sm font-bold mb-2">{label + `:`}</label>
+    </Col>
+
+    <Col md={9}>
+      <input
+        type={type}
+        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline form-control"
+        value={value}
+        onChange={onChange}
+        name={name}
+      />
+    </Col>
+  </Row>
 );
 
 const supplierTypeOptions = [
@@ -165,6 +170,7 @@ export default function F42Form() {
             <input type="hidden" id="00NVC000001UX61" name="00NVC000001UX61" value={certificationsSelected.join('; ')} data-id="certifications" />
             {/* <input type="hidden" id="00NVC000001UiRF" name="00NVC000001UiRF" value={signatureData} data-id="signature-data" /> */}
 
+
             <InputField
               label="Company Name"
               type="text"
@@ -233,6 +239,6 @@ export default function F42Form() {
           </div>
         </Col>
       </Row>
-    </Container>
+    </Container >
   );
 }
