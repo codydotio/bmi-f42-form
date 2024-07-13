@@ -1,115 +1,32 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Form, Button, Container, Row, Col } from 'react-bootstrap';
+import { Form, Button, Container, Row, Col, Card } from 'react-bootstrap';
+import CheckboxGroup from '../FormElements/CheckboxGroup/CheckboxGroup';
+import InputField from '../FormElements/InputField/InputField';
+import AddressFields from '../FormElements/AddressFields/AddressFields';
+import RadioButtonGroup from '../FormElements/RadioButtonGroup/RadioButtonGroup';
 import SignaturePad from '../SignaturePad/SignaturePad';
 import BakerLogo from '../../assets/images/bmi-logo.png';
+import supplierTypeOptions from '../../data/supplierTypeOptions';
+import qualitySystemsOptions from '../../data/qualitySystemsOptions';
+import certificationsOptions from '../../data/certificationsOptions';
 import './F42Form.scss';
-
-const Checkbox = ({ checked, onChange, label, name, id }) => (
-  <Form.Check
-    type="checkbox"
-    label={label}
-    checked={checked}
-    onChange={onChange}
-    name={name}
-    id={id}
-  />
-);
-
-const CheckboxGroup = ({ identifier, groupName, options, selected, setSelected, otherValue, setOtherValue }) => {
-  const handleChange = (value) => {
-    setSelected((prevSelected) =>
-      prevSelected.includes(value)
-        ? prevSelected.filter((item) => item !== value)
-        : [...prevSelected, value]
-    );
-    if (value !== 'other') {
-      setOtherValue("");
-    }
-  }
-
-  return (
-    <div className="mb-4">
-      <h2 className="font-semibold mb-2">{groupName}</h2>
-      {options.map((option, i) => (
-        <Checkbox
-          key={option}
-          checked={selected.includes(option)}
-          onChange={() => handleChange(option)}
-          label={option}
-          id={`checkbox-${identifier}-${i}`}
-        />
-      ))}
-      <Checkbox
-        checked={selected.includes('other')}
-        onChange={() => handleChange('other')}
-        label="Other"
-      />
-      {selected.includes('other') && (
-        <input
-          type="text"
-          className="border mt-2 p-1"
-          value={otherValue}
-          onChange={(e) => setOtherValue(e.target.value)}
-          placeholder="Please specify"
-        />
-      )}
-    </div>
-  );
-};
-
-const InputField = ({ label, type, value, onChange, name }) => (
-  <Row className="mb-2">
-    <Col md={3}>
-      <label className="block text-gray-700 text-sm font-bold mb-2">{label + `:`}</label>
-    </Col>
-
-    <Col md={9}>
-      <input
-        type={type}
-        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline form-control"
-        value={value}
-        onChange={onChange}
-        name={name}
-      />
-    </Col>
-  </Row>
-);
-
-const supplierTypeOptions = [
-  'Machining (CNC, EDM, Swiss)',
-  'Pre-Process Machining (Cutting)',
-  'Post-Process Machining (Welding)',
-  'Processing (Anodizing, Plating, Laser)',
-  'Testing (NDE, C-Scan, USI)'
-];
-
-const qualitySystemsOptions = [
-  'Documented Quality Management Manual',
-  'ISO 9001',
-  'ISO 17025',
-  'AS9100D',
-  'AS9104',
-  'AS9120',
-  'Nadcap NDT',
-  'Nadcap Chemical Processing',
-  'Napcap Surface Enhancement',
-  'Nadcap Heat Treating',
-  'Nadcap AC7004'
-];
-
-const certificationsOptions = [
-  'ITAR Registered',
-  'Exostar',
-  'JCP (DD2345)',
-  'CMMC Level 1',
-  'CMMC Level 2'
-];
 
 export default function F42Form() {
   const [company, setCompany] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
   const [website, setWebsite] = useState('');
+  const [servicesDescription, setServicesDescription] = useState('');
+
+  const [shippingAddress, setShippingAddress] = useState({
+    street: '',
+    suite: '',
+    city: '',
+    state: '',
+    zip: ''
+  });
 
   const [supplierTypeSelected, setSupplierTypeSelected] = useState([]);
   const [supplierTypeOtherValue, setSupplierTypeOtherValue] = useState("");
@@ -117,6 +34,11 @@ export default function F42Form() {
   const [qualitySystemsOtherValue, setQualitySystemsOtherValue] = useState("");
   const [certificationsSelected, setCertificationsSelected] = useState([]);
   const [certificationsOtherValue, setCertificationsOtherValue] = useState("");
+
+  const [radioGroup1, setRadioGroup1] = useState('');
+  const [radioGroup2, setRadioGroup2] = useState('');
+  const [radioGroup3, setRadioGroup3] = useState('');
+  const [radioGroup4, setRadioGroup4] = useState('');
 
   const [signatureData, setSignatureData] = useState(null);
 
@@ -129,12 +51,17 @@ export default function F42Form() {
       firstName,
       lastName,
       website,
+      shippingAddress,
       supplierType: supplierTypeSelected.includes('other') ? supplierTypeOtherValue : supplierTypeSelected,
       qualitySystems: qualitySystemsSelected.includes('other') ? qualitySystemsOtherValue : qualitySystemsSelected,
       certifications: certificationsSelected.includes('other') ? certificationsOtherValue : certificationsSelected,
-      signature: signatureData
+      signature: signatureData,
+      radioGroup1,
+      radioGroup2,
+      radioGroup3,
+      radioGroup4
     });
-  }, [company, firstName, lastName, website, supplierTypeSelected, supplierTypeOtherValue, qualitySystemsSelected, qualitySystemsOtherValue, certificationsSelected, certificationsOtherValue, signatureData]);
+  }, [company, firstName, lastName, website, shippingAddress, supplierTypeSelected, supplierTypeOtherValue, qualitySystemsSelected, qualitySystemsOtherValue, certificationsSelected, certificationsOtherValue, signatureData, radioGroup1, radioGroup2, radioGroup3, radioGroup4]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -156,12 +83,12 @@ export default function F42Form() {
   return (
     <Container className="mt-5">
       <Row className="justify-content-center">
-        <Col md={10}>
+        <Col md={11}>
           <img src={BakerLogo} alt="Baker Manufacturing Inc." className="mb-4 bmi-logo" />
           <h1 className="mb-4">Supplier Quality Survey</h1>
           <h5>AS9100 F42 5.9.2024 / QA/QC Department</h5>
           <p>Please complete this supplier survey so we can get your company on Baker's Approved Supplier List. Our QA Manager will follow up to complete the process. In the meantime, any questions, please email will@bakermfginc.com or call (253) 840-8610.</p>
-          <form ref={formRef} action="https://test.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8&orgId=00DVC000001Kg8z" method="POST" onSubmit={handleSubmit} className="w-full max-w-lg">
+          <Form ref={formRef} action="https://test.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8&orgId=00DVC000001Kg8z" method="POST" onSubmit={handleSubmit} className="w-full max-w-lg">
             <input type="hidden" name='captcha_settings' value='{"keyname":"BMI_Supplier_Form","fallback":"true","orgId":"00DVC000001Kg8z","ts":""}' />
             <input type="hidden" name="oid" value="00DVC000001Kg8z" />
             <input type="hidden" name="retURL" value="http://bakermfginc.com/contact" />
@@ -169,7 +96,10 @@ export default function F42Form() {
             <input type="hidden" id="00NVC000001Lc89" name="00NVC000001Lc89" value={qualitySystemsSelected.join('; ')} data-id="quality_systems" />
             <input type="hidden" id="00NVC000001UX61" name="00NVC000001UX61" value={certificationsSelected.join('; ')} data-id="certifications" />
             {/* <input type="hidden" id="00NVC000001UiRF" name="00NVC000001UiRF" value={signatureData} data-id="signature-data" /> */}
-
+            <input type="hidden" name="00NVC000001V3x7" value={radioGroup1} />
+            <input type="hidden" name="00NVC000001V59J" value={radioGroup2} />
+            <input type="hidden" name="00NVC000001V5Av" value={radioGroup3} />
+            <input type="hidden" name="00NVC000001V5CX" value={radioGroup4} />
 
             <InputField
               label="Company Name"
@@ -177,68 +107,191 @@ export default function F42Form() {
               value={company}
               onChange={(e) => setCompany(e.target.value)}
               name="company"
+              placeholder={"Company Name"}
             />
-            <InputField
-              label="First Name"
-              type="text"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              name="first_name"
-            />
-            <InputField
-              label="Last Name"
-              type="text"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-              name="last_name"
-            />
+
+            <Row>
+              <Col md={3}>
+                <label className="block text-gray-700 text-sm font-bold mt-2">Main Contact:</label>
+              </Col>
+              <Col md={9}>
+                <Row>
+                  <Col md={6}>
+                    <InputField
+                      type="text"
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      name="first_name"
+                      placeholder={"First Name"}
+                    />
+                  </Col>
+                  <Col md={6}>
+                    <InputField
+                      type="text"
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      name="last_name"
+                      placeholder={"Last Name"}
+                    />
+                  </Col>
+                </Row>
+                <Row>
+                  <Col md={6}>
+                    <InputField
+                      type="text"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      name="phone"
+                      placeholder={"Phone"}
+                    />
+                  </Col>
+                  <Col md={6}>
+                    <InputField
+                      type="text"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      name="email"
+                      placeholder={"Email"}
+                    />
+                  </Col>
+                </Row>
+
+              </Col>
+            </Row>
+
             <InputField
               label="Website"
               type="text"
               value={website}
               onChange={(e) => setWebsite(e.target.value)}
               name="url"
+              placeholder={"www.company.com"}
             />
-            <CheckboxGroup
-              identifier={'SupplerType'}
-              groupName="Supplier Type"
-              options={supplierTypeOptions}
-              selected={supplierTypeSelected}
-              setSelected={setSupplierTypeSelected}
-              otherValue={supplierTypeOtherValue}
-              setOtherValue={setSupplierTypeOtherValue}
+
+            <InputField
+              label="Description"
+              type="text"
+              value={servicesDescription}
+              onChange={(e) => setServicesDescription(e.target.value)}
+              name="url"
+              placeholder={"A brief description of the services you provide"}
             />
-            <CheckboxGroup
-              identifier={'QualitySystems'}
-              groupName="Quality Systems"
-              options={qualitySystemsOptions}
-              selected={qualitySystemsSelected}
-              setSelected={setQualitySystemsSelected}
-              otherValue={qualitySystemsOtherValue}
-              setOtherValue={setQualitySystemsOtherValue}
-            />
-            <CheckboxGroup
-              identifier={'Certifications'}
-              groupName="Certifications / Audits / Registrations"
-              options={certificationsOptions}
-              selected={certificationsSelected}
-              setSelected={setCertificationsSelected}
-              otherValue={certificationsOtherValue}
-              setOtherValue={setCertificationsOtherValue}
-            />
+
+            <hr />
+
+            <Row>
+              <Col md={3}>
+                <label className="block text-gray-700 text-sm font-bold mt-2">Shipping Address:</label>
+              </Col>
+              <Col md={9}>
+                <AddressFields
+                  addressType="Shipping"
+                  address={shippingAddress}
+                  setAddress={setShippingAddress}
+                />
+              </Col>
+            </Row>
+
+            <Card className="mb-4">
+              <Card.Header>
+                <h4>Supplier Type
+                  <small> (Check all that apply)</small>
+                </h4>
+              </Card.Header>
+              <Card.Body>
+                <CheckboxGroup
+                  identifier={'SupplierType'}
+                  options={supplierTypeOptions}
+                  selected={supplierTypeSelected}
+                  setSelected={setSupplierTypeSelected}
+                  otherValue={supplierTypeOtherValue}
+                  setOtherValue={setSupplierTypeOtherValue}
+                />
+              </Card.Body>
+            </Card>
+
+            <Card className="mb-4">
+              <Card.Header>
+                <h4>Quality Systems
+                  <small> (Check all that apply)</small>
+                </h4>
+              </Card.Header>
+              <Card.Body>
+                <CheckboxGroup
+                  identifier={'QualitySystems'}
+                  options={qualitySystemsOptions}
+                  selected={qualitySystemsSelected}
+                  setSelected={setQualitySystemsSelected}
+                  otherValue={qualitySystemsOtherValue}
+                  setOtherValue={setQualitySystemsOtherValue}
+                />
+              </Card.Body>
+            </Card>
+
+            <Card className="mb-4">
+              <Card.Header>
+                <h4>Certifications / Audits / Registrations
+                  <small> (Check all that apply)</small>
+                </h4>
+              </Card.Header>
+              <Card.Body>
+                <CheckboxGroup
+                  identifier={'Certifications'}
+                  options={certificationsOptions}
+                  selected={certificationsSelected}
+                  setSelected={setCertificationsSelected}
+                  otherValue={certificationsOtherValue}
+                  setOtherValue={setCertificationsOtherValue}
+                />
+              </Card.Body>
+            </Card>
+
+            <Card className="mb-4">
+              <Card.Body>
+                <RadioButtonGroup
+                  id="radioGroup1"
+                  selectedValue={radioGroup1}
+                  setSelectedValue={setRadioGroup1}
+                  question="Does your company adhere to Baker's Procurement Quality Requirements?"
+                />
+
+                <RadioButtonGroup
+                  id="radioGroup2"
+                  selectedValue={radioGroup2}
+                  setSelectedValue={setRadioGroup2}
+                  question="Are quality records kept on file for 10 years?"
+                />
+
+                <RadioButtonGroup
+                  id="radioGroup3"
+                  selectedValue={radioGroup3}
+                  setSelectedValue={setRadioGroup3}
+                  question="Is a Certificate of Compliance (CofC) provided with each order?"
+                />
+
+                <RadioButtonGroup
+                  id="radioGroup4"
+                  selectedValue={radioGroup4}
+                  setSelectedValue={setRadioGroup4}
+                  question="Is a packing slip with order information provided with each shipment?"
+                />
+              </Card.Body>
+            </Card>
 
             <SignaturePad setSignatureData={setSignatureData} />
 
+            <hr />
+
             <div className="g-recaptcha" data-sitekey="6LeQ__opAAAAAB6h9j5z5IWqUqGajHIc6tOEBbJA"></div>
 
-            <button type="submit" className="mt-4 bg-blue-500 text-white px-4 py-2 rounded">Submit</button>
-          </form>
+            <Button type="submit" className="mt-4 bg-blue-500 text-white px-4 py-2 rounded">Submit</Button>
+          </Form>
           <div className="w-full max-w-lg mt-8 p-4 border rounded">
             <h2 className="font-semibold mb-2">Form Data Preview</h2>
             <pre className="text-sm whitespace-pre-wrap">{JSON.stringify(formData, null, 2)}</pre>
           </div>
         </Col>
       </Row>
-    </Container >
+    </Container>
   );
 }
