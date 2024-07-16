@@ -1,5 +1,17 @@
+.form-header {
+  display: flex;
+  justify-content: space-between;
+
+  h1,
+  h5 {
+    font-weight: 700;
+  }
+
+  text-align: right;
+}
+
 .bmi-logo {
-  height: 50px;
+  height: 80px;
 }
 
 .checkbox-group {
@@ -11,8 +23,6 @@
     width: 50%;
   }
 }
-
-
 
 .card-header {
   h4 {
@@ -37,5 +47,18 @@
   input[type="text"] {
     margin-left: 10px;
     width: 100%;
+  }
+}
+
+.form-submit-card {
+  .card-body {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row !important;
+    align-items: center;
+  }
+
+  button[type="submit"] {
+    font-weight: 700;
   }
 }

@@ -1,13 +1,13 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { Row, Col, Form } from 'react-bootstrap';
 
-const RadioButtonGroup = ({ selectedValue, setSelectedValue, question, id }) => {
+const RadioButtonGroup = forwardRef(({ id, selectedValue, setSelectedValue, question, error }, ref) => {
   const handleChange = (e) => {
     setSelectedValue(e.target.value);
   };
 
   return (
-    <Row className="mb-2">
+    <Row className="mb-2 radio-group">
       <Col className="flex-row" md={3}>
         <Form.Check
           inline
@@ -32,9 +32,10 @@ const RadioButtonGroup = ({ selectedValue, setSelectedValue, question, id }) => 
       </Col>
       <Col>
         <p className="mb-0">{question}</p>
+        {error && <Form.Text className="text-danger">{error}</Form.Text>}
       </Col>
     </Row>
   );
-};
+});
 
 export default RadioButtonGroup;

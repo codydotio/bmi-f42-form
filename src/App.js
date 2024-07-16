@@ -1,4 +1,4 @@
-import './App.css';
+import './App.scss';
 import F42Form from './components/F42/F42Form';
 
 function App() {
