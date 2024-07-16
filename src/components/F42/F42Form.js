@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Form, Button, Container, Row, Col, Card } from 'react-bootstrap';
 import CheckboxGroup from '../FormElements/CheckboxGroup/CheckboxGroup';
 import InputField from '../FormElements/InputField/InputField';
@@ -64,6 +64,47 @@ export default function F42Form() {
   const radioGroup3Ref = useRef(null);
   const radioGroup4Ref = useRef(null);
   const signatureRef = useRef(null);
+
+  useEffect(() => {
+    setFormData({
+      company,
+      firstName,
+      lastName,
+      phone,
+      email,
+      website,
+      servicesDescription,
+      shippingAddress,
+      supplierType: supplierTypeSelected.includes('other') ? supplierTypeOtherValue : supplierTypeSelected,
+      qualitySystems: qualitySystemsSelected.includes('other') ? qualitySystemsOtherValue : qualitySystemsSelected,
+      certifications: certificationsSelected.includes('other') ? certificationsOtherValue : certificationsSelected,
+      radioGroup1,
+      radioGroup2,
+      radioGroup3,
+      radioGroup4,
+      signature: signatureData
+    });
+  }, [
+    company,
+    firstName,
+    lastName,
+    phone,
+    email,
+    website,
+    servicesDescription,
+    shippingAddress,
+    supplierTypeSelected,
+    supplierTypeOtherValue,
+    qualitySystemsSelected,
+    qualitySystemsOtherValue,
+    certificationsSelected,
+    certificationsOtherValue,
+    radioGroup1,
+    radioGroup2,
+    radioGroup3,
+    radioGroup4,
+    signatureData
+  ]);
 
   const validateForm = () => {
     const newErrors = {};
@@ -156,7 +197,7 @@ export default function F42Form() {
 
 
     console.log(formData);
-
+    debugger
     // Submit to Salesforce Web-to-Lead
     formElement.submit();
   };
@@ -414,6 +455,11 @@ export default function F42Form() {
             </Card>
 
           </Form>
+
+          <div className="w-full max-w-lg mt-8 p-4 border rounded">
+            <h2 className="font-semibold mb-2">Form Data Preview</h2>
+            <pre className="text-sm whitespace-pre-wrap">{JSON.stringify(formData, null, 2)}</pre>
+          </div>
         </Col>
       </Row>
     </Container>
