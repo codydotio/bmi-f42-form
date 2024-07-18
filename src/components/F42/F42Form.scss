@@ -1,32 +1,71 @@
 .form-header {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  text-align: center;
+
+  h1 {
+    @media(max-width: 767px) {
+      font-size: 2rem;
+    }
+  }
+
+  h5 {
+    @media(max-width: 767px) {
+      font-size: 1.1rem;
+    }
+  }
+
+  @media(min-width: 768px) {
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: right;
+  }
 
   h1,
   h5 {
     font-weight: 700;
   }
-
-  text-align: right;
 }
 
 .bmi-logo {
-  height: 80px;
+  height: 60px;
+  align-self: center;
+
+  @media(max-width: 767px) {
+    margin-bottom: 1em;
+    height: 80px;
+  }
+
+  @media(min-width: 820px) {
+    height: 60px;
+  }
+
+  @media(min-width: 1024px) {
+    height: 80px;
+  }
 }
 
 .checkbox-group {
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+  flex-direction: column;
+
+  @media(min-width: 768px) {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
 
   .form-check {
-    width: 50%;
+    @media(min-width: 768px) {
+      width: 50%;
+    }
+
   }
 }
 
 .card-header {
   h4 {
     margin: 0;
+    font-weight: 700;
 
     small {
       font-size: 0.5em;
@@ -53,10 +92,27 @@
 .form-submit-card {
   .card-body {
     display: flex;
-    justify-content: space-between;
-    flex-direction: row !important;
-    align-items: center;
+    flex-direction: column;
+
+    @media(min-width: 768px) {
+      justify-content: space-between;
+      flex-direction: row !important;
+      align-items: center;
+    }
   }
+
+  .g-recaptcha {
+    @media(max-width: 767px) {
+      margin-bottom: 1em;
+    }
+
+    >div {
+      @media(max-width: 767px) {
+        margin: 0 auto;
+      }
+    }
+  }
+
 
   button[type="submit"] {
     font-weight: 700;

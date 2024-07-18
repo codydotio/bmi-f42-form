@@ -41,7 +41,7 @@ const SignaturePad = forwardRef(({ setSignatureData, error }, ref) => {
     <Card className="mb-4" ref={ref}>
       <Card.Header>
         <h4>Signature
-          <small className="text-muted"> (Sign below)</small>
+          <small className="text-muted"> (Sign Below and Click Save Signature)</small>
         </h4>
       </Card.Header>
       <Card.Body className="p-0">

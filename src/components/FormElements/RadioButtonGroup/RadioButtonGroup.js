@@ -1,5 +1,6 @@
 import React, { forwardRef } from 'react';
 import { Row, Col, Form } from 'react-bootstrap';
+import './RadioButtonGroup.scss';
 
 const RadioButtonGroup = forwardRef(({ id, selectedValue, setSelectedValue, question, error }, ref) => {
   const handleChange = (e) => {

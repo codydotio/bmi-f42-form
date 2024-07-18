@@ -9,6 +9,7 @@ import BakerLogo from '../../assets/images/bmi-logo.png';
 import supplierTypeOptions from '../../data/supplierTypeOptions';
 import qualitySystemsOptions from '../../data/qualitySystemsOptions';
 import certificationsOptions from '../../data/certificationsOptions';
+import jsPDF from 'jspdf';
 import './F42Form.scss';
 
 export default function F42Form() {
@@ -154,7 +155,7 @@ export default function F42Form() {
     setPhone(formattedPhoneNumber);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const formElement = formRef.current;
 
@@ -189,23 +190,48 @@ export default function F42Form() {
       return;
     }
 
+    const doc = new jsPDF();
+    doc.text(`Company: ${company}`, 10, 10);
+    doc.text(`First Name: ${firstName}`, 10, 20);
+    doc.text(`Last Name: ${lastName}`, 10, 30);
+    doc.text(`Phone: ${phone}`, 10, 40);
+    doc.text(`Email: ${email}`, 10, 50);
+    doc.text(`Website: ${website}`, 10, 60);
+    doc.text(`Description: ${servicesDescription}`, 10, 70);
+
+    const pdfBlob = doc.output('blob');
+
+    const formData = new FormData();
+    formData.append('pdf', pdfBlob, 'form-data.pdf');
+
     const signatureInput = document.createElement('input');
     signatureInput.type = 'hidden';
     signatureInput.name = '00NVC000001UiRF';
     signatureInput.value = formData.signature;
     formElement.appendChild(signatureInput);
 
+    try {
+      const response = await fetch('/api/send-email', {
+        method: 'POST',
+        body: formData,
+      });
 
-    console.log(formData);
-    debugger
-    // Submit to Salesforce Web-to-Lead
-    formElement.submit();
+      if (response.ok) {
+        console.log('Email sent successfully');
+        // Submit the form to Salesforce Web-to-Lead
+        formElement.submit();
+      } else {
+        console.error('Email sending failed');
+      }
+    } catch (error) {
+      console.error('Error sending email:', error);
+    }
   };
 
   return (
-    <Container className="mt-5">
+    <Container>
       <Row className="justify-content-center">
-        <Col md={11} lg={8}>
+        <Col sm={12} md={12} lg={11} xl={10}>
           <div className="form-header">
             <img src={BakerLogo} alt="Baker Manufacturing Inc." className="bmi-logo" />
             <div className="form-header-info">
@@ -214,7 +240,7 @@ export default function F42Form() {
             </div>
           </div>
           <hr />
-          <p>Please complete this supplier survey so we can get your company on Baker's Approved Supplier List. Our QA Manager will follow up to complete the process. In the meantime, any questions, please email will@bakermfginc.com or call (253) 840-8610.</p>
+          <p>Please complete this supplier survey so we can get your company on Baker's Approved Supplier List. Our QA Manager will follow up to complete the process. In the meantime, any questions, please email <a href="mailto:will@bakermfginc.com">will@bakermfginc.com</a> or call <a href="tel:2538408610">(253) 840-8610</a>.</p>
           <hr />
           <Form ref={formRef} action="https://test.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8&orgId=00DVC000001Kg8z" method="POST" onSubmit={handleSubmit} noValidate className="w-full max-w-lg mb-4">
             <input type="hidden" name='captcha_settings' value='{"keyname":"BMI_Supplier_Form","fallback":"true","orgId":"00DVC000001Kg8z","ts":""}' />
