@@ -211,7 +211,7 @@ export default function F42Form() {
     formElement.appendChild(signatureInput);
 
     try {
-      const response = await fetch('/api/send-email', {
+      const response = await fetch('http://localhost:3001/api/send-email', {
         method: 'POST',
         body: formData,
       });
