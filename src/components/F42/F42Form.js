@@ -9,7 +9,6 @@ import BakerLogo from '../../assets/images/bmi-logo.png';
 import supplierTypeOptions from '../../data/supplierTypeOptions';
 import qualitySystemsOptions from '../../data/qualitySystemsOptions';
 import certificationsOptions from '../../data/certificationsOptions';
-import jsPDF from 'jspdf';
 import './F42Form.scss';
 
 export default function F42Form() {
@@ -41,7 +40,7 @@ export default function F42Form() {
   const [radioGroup3, setRadioGroup3] = useState('');
   const [radioGroup4, setRadioGroup4] = useState('');
 
-  const [signatureData, setSignatureData] = useState(null);
+  const [signatureData, setSignatureData] = useState('');
   const [isSignatureSaved, setIsSignatureSaved] = useState(false);
 
   const [formData, setFormData] = useState({});
@@ -190,36 +189,58 @@ export default function F42Form() {
       return;
     }
 
-    const doc = new jsPDF();
-    doc.text(`Company: ${company}`, 10, 10);
-    doc.text(`First Name: ${firstName}`, 10, 20);
-    doc.text(`Last Name: ${lastName}`, 10, 30);
-    doc.text(`Phone: ${phone}`, 10, 40);
-    doc.text(`Email: ${email}`, 10, 50);
-    doc.text(`Website: ${website}`, 10, 60);
-    doc.text(`Description: ${servicesDescription}`, 10, 70);
+    // const doc = new jsPDF();
+    // doc.text(`Company: ${company}`, 10, 10);
+    // doc.text(`First Name: ${firstName}`, 10, 20);
+    // doc.text(`Last Name: ${lastName}`, 10, 30);
+    // doc.text(`Phone: ${phone}`, 10, 40);
+    // doc.text(`Email: ${email}`, 10, 50);
+    // doc.text(`Website: ${website}`, 10, 60);
+    // doc.text(`Description: ${servicesDescription}`, 10, 70);
 
-    const pdfBlob = doc.output('blob');
+    // const pdfBlob = doc.output('blob');
 
-    const formData = new FormData();
-    formData.append('pdf', pdfBlob, 'form-data.pdf');
+    // const formData = new FormData();
+    // formData.append('pdf', pdfBlob, 'form-data.pdf');
 
-    const signatureInput = document.createElement('input');
-    signatureInput.type = 'hidden';
-    signatureInput.name = '00NVC000001UiRF';
-    signatureInput.value = formData.signature;
-    formElement.appendChild(signatureInput);
+    // const signatureInput = document.createElement('input');
+    // signatureInput.type = 'hidden';
+    // signatureInput.name = '00NVC000001UiRF';
+    // signatureInput.value = formData.signature;
+    // formElement.appendChild(signatureInput);
+
+    const formData = {
+      company,
+      firstName,
+      lastName,
+      phone,
+      email,
+      website,
+      servicesDescription,
+      shippingAddress,
+      supplierType: supplierTypeSelected.includes('other') ? supplierTypeOtherValue : supplierTypeSelected,
+      qualitySystems: qualitySystemsSelected.includes('other') ? qualitySystemsOtherValue : qualitySystemsSelected,
+      certifications: certificationsSelected.includes('other') ? certificationsOtherValue : certificationsSelected,
+      radioGroup1,
+      radioGroup2,
+      radioGroup3,
+      radioGroup4,
+      signature: signatureData
+    };
 
     try {
-      const response = await fetch('http://localhost:3001/api/send-email', {
+      const response = await fetch('http://localhost:3003/api/send-email', {
         method: 'POST',
-        body: formData,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
       });
 
       if (response.ok) {
         console.log('Email sent successfully');
         // Submit the form to Salesforce Web-to-Lead
-        formElement.submit();
+        formRef.current.submit();
       } else {
         console.error('Email sending failed');
       }
@@ -249,7 +270,7 @@ export default function F42Form() {
             <input type="hidden" id="00NVC000001LVhl" name="00NVC000001LVhl" value={supplierTypeSelected.join('; ')} data-id="supplier_type" />
             <input type="hidden" id="00NVC000001Lc89" name="00NVC000001Lc89" value={qualitySystemsSelected.join('; ')} data-id="quality_systems" />
             <input type="hidden" id="00NVC000001UX61" name="00NVC000001UX61" value={certificationsSelected.join('; ')} data-id="certifications" />
-            {/* <input type="hidden" id="00NVC000001UiRF" name="00NVC000001UiRF" value={signatureData} data-id="signature-data" /> */}
+            <input type="hidden" id="00NVC000001UiRF" name="00NVC000001UiRF" value={signatureData || ''} data-id="signature-data" />
             <input type="hidden" name="00NVC000001V3x7" value={radioGroup1} />
             <input type="hidden" name="00NVC000001V59J" value={radioGroup2} />
             <input type="hidden" name="00NVC000001V5Av" value={radioGroup3} />
@@ -432,7 +453,11 @@ export default function F42Form() {
                   id="radioGroup1"
                   selectedValue={radioGroup1}
                   setSelectedValue={setRadioGroup1}
-                  question="Does your company adhere to Baker's Procurement Quality Requirements?"
+                  question={
+                    <>
+                      Does your company adhere to <a href="https://static1.squarespace.com/static/63f00bdbf2c2b879cc2c8fd1/t/64102712e652f10be697e3ec/1678780179268/F51+Procurement+Quality+Requirements+-+9-18-2020.pdf" target="_blank" rel="noopener noreferrer">Baker's Procurement Quality Requirements</a>?{' '}
+                    </>
+                  }
                   error={errors.radioGroup1}
                   ref={radioGroup1Ref}
                 />
